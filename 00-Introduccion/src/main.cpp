@@ -64,6 +64,9 @@ Model modelEclipseRearWheels;
 Model modelEclipseFrontalWheels;
 Model modelHeliChasis;
 Model modelHeliHeli;
+//creamos el modelo de
+Model modelHeliRear;
+
 Model modelLambo;
 Model modelLamboLeftDor;
 Model modelLamboRightDor;
@@ -255,6 +258,11 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelHeliChasis.setShader(&shaderMulLighting);
 	modelHeliHeli.loadModel("../models/Helicopter/Mi_24_heli.obj");
 	modelHeliHeli.setShader(&shaderMulLighting);
+	//cargamos el modelo y cargamos el shader
+	modelHeliRear.loadModel("../models/Helicopter/Mi_24_heli_rear.obj");
+	modelHeliRear.setShader(&shaderMulLighting);
+
+
 	// Lamborginhi
 	modelLambo.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_chasis.obj");
 	modelLambo.setShader(&shaderMulLighting);
@@ -488,6 +496,8 @@ void destroy() {
 	modelEclipseRearWheels.destroy();
 	modelHeliChasis.destroy();
 	modelHeliHeli.destroy();
+	//eliminamos el modelo
+	modelHeliRear.destroy();
 	modelLambo.destroy();
 	modelLamboFrontLeftWheel.destroy();
 	modelLamboFrontRightWheel.destroy();
@@ -911,6 +921,14 @@ void applicationLoop() {
 		modelMatrixHeliHeli = glm::translate(modelMatrixHeliHeli, glm::vec3(0.0, 0.0, 0.249548));
 		modelHeliHeli.render(modelMatrixHeliHeli);
 
+		glm::mat4 modelMatrixHeliRear = glm::mat4(modelMatrixHeliChasis);
+		modelMatrixHeliRear = glm::translate(modelMatrixHeliRear, glm::vec3(0.0, 2.09334,-5.65618));
+		modelMatrixHeliRear = glm::rotate(modelMatrixHeliRear, rotHelHelY, glm::vec3(1, 0, 0));
+		modelMatrixHeliRear = glm::translate(modelMatrixHeliRear, glm::vec3(0.0, -2.09334,5.65618));
+		modelHeliRear.render(modelMatrixHeliRear);
+
+
+
 		// Lambo car
 		glDisable(GL_CULL_FACE);
 		glm::mat4 modelMatrixLamboChasis = glm::mat4(modelMatrixLambo);
@@ -980,6 +998,98 @@ void applicationLoop() {
 		modelDartLegoRightLeg.render(modelMatrixDartRightLeg);
 		// Se regresa el cull faces IMPORTANTE para la capa
 		glEnable(GL_CULL_FACE);
+
+		 /*******************************************
+		 * Guardar keyframes
+		 *******************************************/
+		// Para salvar los keyframes
+		if (modelSelected == 1 && record)
+		{
+			matrixDartJoints.push_back(rotDartHead);
+			matrixDartJoints.push_back(rotDartLeftArm);
+			matrixDartJoints.push_back(rotDartLeftHand);
+			matrixDartJoints.push_back(rotDartRightArm);
+			matrixDartJoints.push_back(rotDartRightHand);
+			matrixDartJoints.push_back(rotDartLeftLeg);
+			matrixDartJoints.push_back(rotDartRightLeg);
+
+			if (saveFrame)
+			{
+				appendFrame(myfile, matrixDartJoints);
+				saveFrame = false;
+			}
+		}
+		else if (keyFramesDartJoints.size() > 0)
+		{
+			interpolationDartJoints = numPasosDartJoints / (float)maxNumPasosDartJoints;
+			numPasosDartJoints++;
+			if (interpolationDartJoints > 1.0)
+			{
+				numPasosDartJoints = 0;
+				interpolationDartJoints = 0;
+				indexFrameDartJoints = indexFrameDartJointsNext;
+				indexFrameDartJointsNext++;
+			}
+			if (indexFrameDartJointsNext > keyFramesDartJoints.size() - 1)
+				indexFrameDartJointsNext = 0;
+			rotDartHead = interpolate(
+				keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext,
+				0, interpolationDartJoints // 0 es por el orden en que hicimos matrixDartJoints.push_back()
+			);
+			rotDartLeftArm = interpolate(
+				keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext,
+				1, interpolationDartJoints // 0 es por el orden en que hicimos matrixDartJoints.push_back()
+			);
+			rotDartLeftHand = interpolate(
+				keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext,
+				2, interpolationDartJoints // 0 es por el orden en que hicimos matrixDartJoints.push_back()
+			);
+			rotDartRightArm = interpolate(
+				keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext,
+				3, interpolationDartJoints // 0 es por el orden en que hicimos matrixDartJoints.push_back()
+			);
+			rotDartRightHand = interpolate(
+				keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext,
+				4, interpolationDartJoints // 0 es por el orden en que hicimos matrixDartJoints.push_back()
+			);
+			rotDartLeftLeg = interpolate(
+				keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext,
+				5, interpolationDartJoints // 0 es por el orden en que hicimos matrixDartJoints.push_back()
+			);
+			rotDartRightLeg = interpolate(
+				keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext,
+				6, interpolationDartJoints // 0 es por el orden en que hicimos matrixDartJoints.push_back()
+			);
+		}
+
+		// movimiento de traslacion
+		if (modelSelected == 2 && record)
+		{
+			matrixDart.push_back(modelMatrixDart);
+			if (saveFrame)
+			{
+				saveFrame = false;
+				appendFrame(myfile, matrixDart);
+			}
+		}
+		else if (keyFramesDart.size() > 0)
+		{
+			interpolationDart = numPasosDart / (float)maxNumPasosDart;
+			numPasosDart++;
+			if (interpolationDart > 1.0)
+			{
+				numPasosDart = 0;
+				interpolationDart = 0;
+				indexFrameDart = indexFrameDartNext;
+				indexFrameDartNext++;
+			}
+			if (indexFrameDartNext > keyFramesDart.size() - 1)
+			{
+				indexFrameDartNext = 0;
+			}
+			modelMatrixDart = interpolate(
+				keyFramesDart, indexFrameDart, indexFrameDartNext, 0, interpolationDart);
+		}
 
 		/*******************************************
 		 * Skybox
