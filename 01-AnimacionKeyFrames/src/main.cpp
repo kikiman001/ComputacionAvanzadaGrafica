@@ -82,6 +82,14 @@ Model modelDartLegoLeftHand;
 Model modelDartLegoRightHand;
 Model modelDartLegoLeftLeg;
 Model modelDartLegoRightLeg;
+//Modelos para el punto 1
+
+//Modelo de Nave
+Model modelNave;
+//Modelo de Cohete
+Model modelCohete;
+
+
 
 
 // Model Buzz
@@ -122,6 +130,9 @@ glm::mat4 modelMatrixHeli = glm::mat4(1.0f);
 glm::mat4 modelMatrixLambo = glm::mat4(1.0);
 glm::mat4 modelMatrixAircraft = glm::mat4(1.0);
 glm::mat4 modelMatrixDart = glm::mat4(1.0f);
+glm::mat4 modelMatrixNave = glm::mat4(1.0f);
+glm::mat4 modelMatrixCohete = glm::mat4(1.0f);
+
 
 
 glm::mat4 modelMatrixBuzz = glm::mat4(1.0f);
@@ -346,7 +357,11 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 //insertar aqui los 2 modelos
 
+modelNave.loadModel("../models/teoria/Nave.obj");
+modelNave.setShader(&shaderMulLighting);
 
+modelCohete.loadModel("../models/teoria/Cohete.obj");
+modelCohete.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(0.0, 3.0, 4.0));
 	
@@ -529,6 +544,8 @@ void destroy() {
 	boxLandingPad.destroy();
 	esfera1.destroy();
 
+	
+
 	// Custom objects Delete
 	modelAircraft.destroy();
 	modelDartLegoBody.destroy();
@@ -555,6 +572,8 @@ void destroy() {
 	modelLamboRightDor.destroy();
 	modelRock.destroy();
 
+	modelNave.destroy();
+	modelCohete.destroy();
 
 	modelBuzzHead.destroy();
 	modelBuzzLeftArm.destroy();
@@ -792,6 +811,9 @@ void applicationLoop() {
 
 	modelMatrixDart = glm::translate(modelMatrixDart, glm::vec3(3.0, 0.0, 20.0));
 
+	modelMatrixNave = glm::translate(modelMatrixDart, glm::vec3(-3.0, 0.0, 2.0));
+	modelMatrixCohete = glm::translate(modelMatrixDart, glm::vec3(-3.0, 0.0, 2.0));
+
 	// Variables to interpolation key frames
 	fileName = "../animaciones/animation_dart_joints.txt";
 	keyFramesDartJoints = getKeyRotFrames(fileName);
@@ -990,6 +1012,9 @@ void applicationLoop() {
 		 *******************************************/
 		//Rock render
 		modelRock.render(matrixModelRock);
+
+		modelNave.render(modelMatrixNave);
+		modelCohete.render(modelMatrixCohete);
 		// Forze to enable the unit texture to 0 always ----------------- IMPORTANT
 		glActiveTexture(GL_TEXTURE0);
 
@@ -1043,10 +1068,31 @@ void applicationLoop() {
 		modelMatrixLamboLeftDor = glm::translate(modelMatrixLamboLeftDor, glm::vec3(-1.08676, -0.707316, -0.982601));
 		modelLamboLeftDor.render(modelMatrixLamboLeftDor);
 		modelLamboRightDor.render(modelMatrixLamboChasis);
+
+		// Llanta delantera izquierda del Lambo
+		glm::mat4 modelMatrixLamboLeftFrontWheel = glm::mat4(modelMatrixLamboChasis);
+		modelMatrixLamboLeftFrontWheel = glm::translate(modelMatrixLamboLeftFrontWheel, glm::vec3(0.941901f, 0.377929f, 1.40069f));
+		modelMatrixLamboLeftFrontWheel = glm::rotate(modelMatrixLamboLeftFrontWheel, -rotWheelsY_lambo, glm::vec3(0, 1, 0));
+		modelMatrixLamboLeftFrontWheel = glm::rotate(modelMatrixLamboLeftFrontWheel, rotWheelsX_lambo, glm::vec3(1, 0, 0));
+		modelMatrixLamboLeftFrontWheel = glm::translate(modelMatrixLamboLeftFrontWheel, glm::vec3(-0.941901f, -0.377929f, -1.40069f));
+		modelLamboFrontLeftWheel.render(modelMatrixLamboLeftFrontWheel);
+
+		// Llanta delantera derecha del Lambo
+		glm::mat4 modelMatrixLamboRightFrontWheel = glm::mat4(modelMatrixLamboChasis);
+		modelMatrixLamboRightFrontWheel = glm::translate(modelMatrixLamboRightFrontWheel, glm::vec3(-0.925465f, 0.377929f, 1.40069f));
+		modelMatrixLamboRightFrontWheel = glm::rotate(modelMatrixLamboRightFrontWheel, -rotWheelsY_lambo, glm::vec3(0, 1, 0)); // Corregido aquí
+		modelMatrixLamboRightFrontWheel = glm::rotate(modelMatrixLamboRightFrontWheel, rotWheelsX_lambo, glm::vec3(1, 0, 0));
+		modelMatrixLamboRightFrontWheel = glm::translate(modelMatrixLamboRightFrontWheel, glm::vec3(0.925465f, -0.377929f, -1.40069f));
+
+
+		modelLamboFrontRightWheel.render(modelMatrixLamboRightFrontWheel);
 		modelLamboFrontLeftWheel.render(modelMatrixLamboChasis);
 		modelLamboFrontRightWheel.render(modelMatrixLamboChasis);
 		modelLamboRearLeftWheel.render(modelMatrixLamboChasis);
 		modelLamboRearRightWheel.render(modelMatrixLamboChasis);
+
+		//Llanta delantera izquierda del Lambo
+
 		// Se regresa el cull faces IMPORTANTE para las puertas
 		glEnable(GL_CULL_FACE);
 
@@ -1302,14 +1348,13 @@ void applicationLoop() {
 			flg_edo_lambo = 1;
 			break;
 		case 1: // Estado de avance recto
-			modelMatrixLambo = glm::translate(
-				modelMatrixLambo, glm::vec3(0.0, 0.0, veloAvz_lambo));
+			modelMatrixLambo = glm::translate(modelMatrixLambo, glm::vec3(0.0, 0.0, veloAvz_lambo));
 			avzCont_lambo += veloAvz_lambo;
 			// Rotación de las llantas
-			rotWheelsX_lambo += 0.025;
-			rotWheelsY_lambo += 0.0025;
-			if (rotWheelsY_lambo > 0)
-				rotWheelsY_lambo = 0.0;
+			rotWheelsX_lambo += 0.05f;
+			rotWheelsY_lambo -= 0.02f;
+			if (rotWheelsY_lambo < 0)
+				rotWheelsY_lambo = 0.0f;
 
 			// Si llegamos a una esquina, reiniciamos el avance y pasamos al edo. de giro
 			if (avzCont_lambo >= maxAvz_lambo)
@@ -1330,18 +1375,16 @@ void applicationLoop() {
 			}
 			break;
 		case 2: // Estado de rotación en las esquinas
-			modelMatrixLambo = glm::translate(
-				modelMatrixLambo, glm::vec3(0.0, 0.0, 0.025)); // (0.0, 0.0, 0.025)
-			modelMatrixLambo = glm::rotate(
-				modelMatrixLambo, glm::radians(-deg_veloRot_lambo), glm::vec3(0.0f, 1.0f, 0.0f));
-			deg_rotCont_lambo += deg_veloRot_lambo;
+			modelMatrixLambo = glm::translate(modelMatrixLambo, glm::vec3(0.0f, 0.0f, 0.025f)); // (0.0, 0.0, 0.025)
+			modelMatrixLambo = glm::rotate(modelMatrixLambo, glm::radians(-0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
+			deg_rotCont_lambo += 0.5f;
 
-			rotWheelsY_lambo -= 0.0025;
-			rotWheelsX_lambo += 0.025;
+			rotWheelsY_lambo += 0.002f;
+			rotWheelsX_lambo += 0.05f;
 
-			if (rotWheelsY_lambo < -0.25)
-				rotWheelsY_lambo = -0.25f;
-			if (deg_rotCont_lambo >= 90.0)
+			if (rotWheelsY_lambo < 0.25)
+				rotWheelsY_lambo = 0.25;
+			if (deg_rotCont_lambo > 90.0)
 			{
 				deg_rotCont_lambo = 0;
 				flg_edo_lambo = 0;
