@@ -164,9 +164,21 @@ std::string fileName = "";
 bool record = false;
 
 
+
 // Joints interpolations Buzz
 std::vector<std::vector<float>> keyFramesBuzzJoints;
 std::vector<std::vector<glm::mat4>> keyFramesBuzz;
+int indexFrameBuzzJoints = 0;
+int indexFrameBuzzJointsNext = 1;
+float interpolationBuzzJoints = 0.0;
+int maxNumPasosBuzzJoints = 20;
+int numPasosBuzzJoints = 0;
+int indexFrameBuzz = 0;
+int indexFrameBuzzNext = 1;
+float interpolationBuzz = 0.0;
+int maxNumPasosBuzz = 200;
+int numPasosBuzz = 0;
+
 
 // Joints interpolations Dart Lego
 std::vector<std::vector<float>> keyFramesDartJoints;
@@ -718,16 +730,15 @@ bool processInput(bool continueApplication) {
 	offsetY = 0;
 
 	// Seleccionar modelo
-	if (enableCountSelected && glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS){
+	if (enableCountSelected && glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
 		enableCountSelected = false;
 		modelSelected++;
-		if(modelSelected > 2)
+		if (modelSelected > 4)
 			modelSelected = 0;
-		if(modelSelected == 1)
+		if (modelSelected == 1)
 			fileName = "../animaciones/animation_dart_joints.txt";
 		if (modelSelected == 2)
 			fileName = "../animaciones/animation_dart.txt";
-		//animcaion BUZZ
 		if (modelSelected == 3)
 			fileName = "../animaciones/animation_buzz_joints.txt";
 		if (modelSelected == 4)
@@ -745,15 +756,14 @@ bool processInput(bool continueApplication) {
 			myfile.close();
 		myfile.open(fileName);
 	}
-	if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE
-			&& glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS){
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE
+		&& glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
 		record = false;
 		myfile.close();
-		if(modelSelected == 1)
+		if (modelSelected == 1)
 			keyFramesDartJoints = getKeyRotFrames(fileName);
 		if (modelSelected == 2)
 			keyFramesDart = getKeyFrames(fileName);
-		//Buzz
 		if (modelSelected == 3)
 			keyFramesBuzzJoints = getKeyRotFrames(fileName);
 		if (modelSelected == 4)
@@ -820,14 +830,68 @@ bool processInput(bool continueApplication) {
 
 
 	//BUZZ	
-if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+//Movimiento del Buzz
+	if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
 		glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
 		rotBuzzHead += 0.02;
 	else if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-			 glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+		glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
 		rotBuzzHead -= 0.02;
 
-	// Rotación completa Buzz
+	if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+		rotBuzzHip += 0.02;
+	else if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+		rotBuzzHip -= 0.02;
+
+	if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+		rotBuzzRightArm1 += 0.02;
+	else if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+		rotBuzzRightArm1 -= 0.02;
+
+	if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+		rotBuzzRightArm2 += 0.02;
+	else if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+		rotBuzzRightArm2 -= 0.02;
+
+	if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
+		rotBuzzRightHand += 0.02;
+	else if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
+		rotBuzzRightHand -= 0.02;
+
+	if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+		glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
+		rotBuzzLeftArm += 0.02;
+	else if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+		glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
+		rotBuzzLeftArm -= 0.02;
+
+	if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+		glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS)
+		rotBuzzLeftForearm += 0.02;
+	else if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+		glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS)
+		rotBuzzLeftForearm -= 0.02;
+	if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+		glfwGetKey(window, GLFW_KEY_8) == GLFW_PRESS)
+		rotBuzzLeftHand += 0.02;
+	else if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+		glfwGetKey(window, GLFW_KEY_8) == GLFW_PRESS)
+		rotBuzzLeftHand -= 0.02;
+
+	if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+		glfwGetKey(window, GLFW_KEY_9) == GLFW_PRESS)
+		rotBuzzRightThigh += 0.02;
+	else if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+		glfwGetKey(window, GLFW_KEY_9) == GLFW_PRESS)
+		rotBuzzRightThigh -= 0.02;
+	if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+		glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
+		rotBuzzLeftThigh += 0.02;
+	else if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+		glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
+		rotBuzzLeftThigh -= 0.02;
+
+
 	if (modelSelected == 4 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
 		modelMatrixBuzz = glm::rotate(modelMatrixBuzz, 0.02f, glm::vec3(0, 1, 0));
 	else if (modelSelected == 4 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
@@ -879,6 +943,7 @@ void applicationLoop() {
 	keyFramesDartJoints = getKeyRotFrames(fileName);
 	keyFramesDart = getKeyFrames("../animaciones/animation_dart.txt");
 
+	//Variables para interpolar los key frames del Buzz
 	keyFramesBuzzJoints = getKeyRotFrames("../animaciones/animation_buzz_joints.txt");
 	keyFramesBuzz = getKeyFrames("../animaciones/animation_buzz.txt");
 
@@ -1283,9 +1348,9 @@ void applicationLoop() {
 		 /*******************************************
 		 * Guardar keyframes
 		 *******************************************/
-		// Para salvar los keyframes
-		if (modelSelected == 1 && record)
-		{
+		
+		//Para salvar los frames
+		if (record && modelSelected == 1) {
 			matrixDartJoints.push_back(rotDartHead);
 			matrixDartJoints.push_back(rotDartLeftArm);
 			matrixDartJoints.push_back(rotDartLeftHand);
@@ -1294,82 +1359,91 @@ void applicationLoop() {
 			matrixDartJoints.push_back(rotDartLeftLeg);
 			matrixDartJoints.push_back(rotDartRightLeg);
 
-			if (saveFrame)
-			{
+			if (saveFrame) {
 				appendFrame(myfile, matrixDartJoints);
 				saveFrame = false;
 			}
+
 		}
-		else if (keyFramesDartJoints.size() > 0)
-		{
+		else if (keyFramesDartJoints.size() > 0) {
+			//Para reproducir los frames
 			interpolationDartJoints = numPasosDartJoints / (float)maxNumPasosDartJoints;
 			numPasosDartJoints++;
-			if (interpolationDartJoints > 1.0)
-			{
+			if (interpolationDartJoints > 1.0) {
 				numPasosDartJoints = 0;
 				interpolationDartJoints = 0;
 				indexFrameDartJoints = indexFrameDartJointsNext;
 				indexFrameDartJointsNext++;
 			}
+
 			if (indexFrameDartJointsNext > keyFramesDartJoints.size() - 1)
 				indexFrameDartJointsNext = 0;
-			rotDartHead = interpolate(
-				keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext,
-				0, interpolationDartJoints // 0 es por el orden en que hicimos matrixDartJoints.push_back()
-			);
-			rotDartLeftArm = interpolate(
-				keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext,
-				1, interpolationDartJoints // 0 es por el orden en que hicimos matrixDartJoints.push_back()
-			);
-			rotDartLeftHand = interpolate(
-				keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext,
-				2, interpolationDartJoints // 0 es por el orden en que hicimos matrixDartJoints.push_back()
-			);
-			rotDartRightArm = interpolate(
-				keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext,
-				3, interpolationDartJoints // 0 es por el orden en que hicimos matrixDartJoints.push_back()
-			);
-			rotDartRightHand = interpolate(
-				keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext,
-				4, interpolationDartJoints // 0 es por el orden en que hicimos matrixDartJoints.push_back()
-			);
-			rotDartLeftLeg = interpolate(
-				keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext,
-				5, interpolationDartJoints // 0 es por el orden en que hicimos matrixDartJoints.push_back()
-			);
-			rotDartRightLeg = interpolate(
-				keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext,
-				6, interpolationDartJoints // 0 es por el orden en que hicimos matrixDartJoints.push_back()
-			);
-		}
 
-		// movimiento de traslacion
-		if (modelSelected == 2 && record)
-		{
-			matrixDart.push_back(modelMatrixDart);
-			if (saveFrame)
-			{
-				saveFrame = false;
-				appendFrame(myfile, matrixDart);
-			}
+			rotDartHead = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 0, interpolationDartJoints);
+			rotDartLeftArm = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 1, interpolationDartJoints);
+			rotDartLeftHand = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 2, interpolationDartJoints);
+			rotDartRightArm = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 3, interpolationDartJoints);
+			rotDartRightHand = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 4, interpolationDartJoints);
+			rotDartLeftLeg = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 5, interpolationDartJoints);
+			rotDartRightLeg = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 6, interpolationDartJoints);
+
 		}
-		else if (keyFramesDart.size() > 0)
-		{
+		if (record && modelSelected == 2) {
+			matrixDart.push_back(modelMatrixDart);
+			if (saveFrame) {
+				appendFrame(myfile, matrixDart);
+				saveFrame = false;
+			}
+
+		}
+		else if (keyFramesDart.size() > 0) {
 			interpolationDart = numPasosDart / (float)maxNumPasosDart;
 			numPasosDart++;
-			if (interpolationDart > 1.0)
-			{
+			if (interpolationDart > 1.0) {
 				numPasosDart = 0;
 				interpolationDart = 0;
 				indexFrameDart = indexFrameDartNext;
 				indexFrameDartNext++;
 			}
 			if (indexFrameDartNext > keyFramesDart.size() - 1)
-			{
 				indexFrameDartNext = 0;
+			modelMatrixDart = interpolate(keyFramesDart, indexFrameDart, indexFrameDartNext, 0, interpolationDart);
+
+		}
+
+		// ************************ Frames para el Buzz
+		// Para salvar el frame
+		if (record && modelSelected == 3) {
+			matrixBuzzJoints.push_back(rotBuzzHead);
+			matrixBuzzJoints.push_back(rotBuzzHip);
+			matrixBuzzJoints.push_back(rotBuzzRightArm1);
+			matrixBuzzJoints.push_back(rotBuzzRightArm2);
+			matrixBuzzJoints.push_back(rotBuzzRightForeArm);
+			matrixBuzzJoints.push_back(rotBuzzRightHand);
+			if (saveFrame) {
+				appendFrame(myfile, matrixBuzzJoints);
+				saveFrame = false;
 			}
-			modelMatrixDart = interpolate(
-				keyFramesDart, indexFrameDart, indexFrameDartNext, 0, interpolationDart);
+		}
+		else if (keyFramesBuzzJoints.size() > 0) {
+			// Para reproducir el frame
+			interpolationBuzzJoints = numPasosBuzzJoints / (float)maxNumPasosBuzzJoints;
+			numPasosBuzzJoints++;
+			if (interpolationBuzzJoints > 1.0) {
+				numPasosBuzzJoints = 0;
+				interpolationBuzzJoints = 0;
+				indexFrameBuzzJoints = indexFrameBuzzJointsNext;
+				indexFrameBuzzJointsNext++;
+			}
+			if (indexFrameBuzzJointsNext > keyFramesBuzzJoints.size() - 1)
+				indexFrameBuzzJointsNext = 0;
+
+			rotBuzzHead = interpolate(keyFramesBuzzJoints, indexFrameBuzzJoints, indexFrameBuzzJointsNext, 0, interpolationBuzzJoints);
+			rotBuzzHip = interpolate(keyFramesBuzzJoints, indexFrameBuzzJoints, indexFrameBuzzJointsNext, 1, interpolationBuzzJoints);
+			rotBuzzRightArm1 = interpolate(keyFramesBuzzJoints, indexFrameBuzzJoints, indexFrameBuzzJointsNext, 2, interpolationBuzzJoints);
+			rotBuzzRightArm2 = interpolate(keyFramesBuzzJoints, indexFrameBuzzJoints, indexFrameBuzzJointsNext, 3, interpolationBuzzJoints);
+			rotBuzzRightForeArm = interpolate(keyFramesBuzzJoints, indexFrameBuzzJoints, indexFrameBuzzJointsNext, 4, interpolationBuzzJoints);
+			rotBuzzRightHand = interpolate(keyFramesBuzzJoints, indexFrameBuzzJoints, indexFrameBuzzJointsNext, 5, interpolationBuzzJoints);
 		}
 
 
