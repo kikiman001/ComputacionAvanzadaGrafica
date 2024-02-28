@@ -89,9 +89,6 @@ Model modelNave;
 //Modelo de Cohete
 Model modelCohete;
 
-
-
-
 // Model Buzz
 Model modelBuzzHead;
 Model modelBuzzLeftArm;
@@ -100,6 +97,21 @@ Model modelBuzzLeftHand;
 Model modelBuzzHip;
 Model modelBuzzTorso;
 
+Model modelBuzzRightArm;
+Model modelBuzzRightForearm;
+Model modelBuzzRightHand;
+
+Model modelBuzzLeftCalf;
+Model modelBuzzLeftFoot;
+Model modelBuzzLeftThigh;
+Model modelBuzzLeftWing1;
+Model modelBuzzLeftWing2;
+
+Model modelBuzzRightCalf;
+Model modelBuzzRightFoot;
+Model modelBuzzRightThigh;
+Model modelBuzzRightWing1;
+Model modelBuzzRightWing2;
 
 GLuint textureCespedID, textureWallID, textureWindowID, textureHighwayID, textureLandingPadID;
 GLuint skyboxTextureID;
@@ -132,11 +144,14 @@ glm::mat4 modelMatrixAircraft = glm::mat4(1.0);
 glm::mat4 modelMatrixDart = glm::mat4(1.0f);
 glm::mat4 modelMatrixNave = glm::mat4(1.0f);
 glm::mat4 modelMatrixCohete = glm::mat4(1.0f);
-
-
-
 glm::mat4 modelMatrixBuzz = glm::mat4(1.0f);
-float rotBuzzHead = 0.0, rotBuzzLeftArm = 0.0, rotBuzzLeftForeArm = 0.0, rotBuzzLeftHand = 0.0;
+
+
+
+// float rotBuzzHead = 0.0, rotBuzzLeftArm = 0.0, rotBuzzLeftForeArm = 0.0, rotBuzzLeftHand = 0.0;
+
+float rotBuzzHead = 0.0, rotBuzzLeftArm = 0.0, rotBuzzLeftForearm = 0.0, rotBuzzLeftHand = 0.0, rotBuzzHip = 0.0, rotBuzzRightArm1 = 0.0,
+rotBuzzRightArm2 = 0.0, rotBuzzRightForeArm = 0.0, rotBuzzRightHand = 0.0, rotBuzzLeftLeg = 0.0, rotBuzzRightLeg = 0.0, rotBuzzLeftThigh = 0.0, rotBuzzRightThigh = 0.0;
 
 float rotDartHead = 0.0, rotDartLeftArm = 0.0, rotDartLeftHand = 0.0, rotDartRightArm = 0.0, rotDartRightHand = 0.0, rotDartLeftLeg = 0.0, rotDartRightLeg = 0.0;
 int modelSelected = 0;
@@ -341,6 +356,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelDartLegoRightLeg.loadModel("../models/LegoDart/LeoDart_right_leg.obj");
 	modelDartLegoRightLeg.setShader(&shaderMulLighting);
 // Model Buzz
+
 	modelBuzzHead.loadModel("../models/buzz/buzzlightyHead.obj");
 	modelBuzzHead.setShader(&shaderMulLighting);
 	modelBuzzHip.loadModel("../models/buzz/buzzlightyHip.obj");
@@ -353,6 +369,35 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelBuzzLeftForeArm.setShader(&shaderMulLighting);
 	modelBuzzLeftHand.loadModel("../models/buzz/buzzlightyLeftHand.obj");
 	modelBuzzLeftHand.setShader(&shaderMulLighting);
+
+	modelBuzzRightArm.loadModel("../models/buzz/buzzlightyRightArm.obj");
+	modelBuzzRightArm.setShader(&shaderMulLighting);
+	modelBuzzRightForearm.loadModel("../models/buzz/buzzlightyRightForearm.obj");
+	modelBuzzRightForearm.setShader(&shaderMulLighting);
+	modelBuzzRightHand.loadModel("../models/buzz/buzzlightyRightHand.obj");
+	modelBuzzRightHand.setShader(&shaderMulLighting);
+
+	modelBuzzLeftCalf.loadModel("../models/buzz/buzzlightyLeftCalf.obj");
+	modelBuzzLeftCalf.setShader(&shaderMulLighting);
+	modelBuzzLeftThigh.loadModel("../models/buzz/buzzlightyLeftThigh.obj");
+	modelBuzzLeftThigh.setShader(&shaderMulLighting);
+	modelBuzzLeftFoot.loadModel("../models/buzz/buzzlightyLeftFoot.obj");
+	modelBuzzLeftFoot.setShader(&shaderMulLighting);
+	modelBuzzLeftWing1.loadModel("../models/buzz/buzzlightyLeftWing1.obj");
+	modelBuzzLeftWing1.setShader(&shaderMulLighting);
+	modelBuzzLeftWing2.loadModel("../models/buzz/buzzlightyLeftWing2.obj");
+	modelBuzzLeftWing2.setShader(&shaderMulLighting);
+
+	modelBuzzRightCalf.loadModel("../models/buzz/buzzlightyRightCalf.obj");
+	modelBuzzRightCalf.setShader(&shaderMulLighting);
+	modelBuzzRightThigh.loadModel("../models/buzz/buzzlightyRightThigh.obj");
+	modelBuzzRightThigh.setShader(&shaderMulLighting);
+	modelBuzzRightFoot.loadModel("../models/buzz/buzzlightyRightFoot.obj");
+	modelBuzzRightFoot.setShader(&shaderMulLighting);
+	modelBuzzRightWing1.loadModel("../models/buzz/buzzlightyRightWing1.obj");
+	modelBuzzRightWing1.setShader(&shaderMulLighting);
+	modelBuzzRightWing2.loadModel("../models/buzz/buzzlightyRightWing2.obj");
+	modelBuzzRightWing2.setShader(&shaderMulLighting);
 
 
 //insertar aqui los 2 modelos
@@ -575,18 +620,30 @@ void destroy() {
 	modelNave.destroy();
 	modelCohete.destroy();
 
-	modelBuzzHead.destroy();
-	modelBuzzLeftArm.destroy();
-	modelBuzzLeftForeArm.destroy();
-	modelBuzzLeftHand.destroy();
-	modelBuzzTorso.destroy();
+	// modelBuzzHead.destroy();
+	// modelBuzzLeftArm.destroy();
+	//modelBuzzLeftForearm.destroy();
+	// modelBuzzLeftHand.destroy();
+	// modelBuzzTorso.destroy();
 
 	modelBuzzHead.destroy();
-	modelBuzzHip.destroy();
-	modelBuzzTorso.destroy();
 	modelBuzzLeftArm.destroy();
 	modelBuzzLeftForeArm.destroy();
 	modelBuzzLeftHand.destroy();
+	modelBuzzTorso.destroy();
+	modelBuzzLeftCalf.destroy();
+	modelBuzzLeftFoot.destroy();
+	modelBuzzLeftThigh.destroy();
+	modelBuzzLeftWing1.destroy();
+	modelBuzzLeftWing2.destroy();
+	modelBuzzRightArm.destroy();
+	modelBuzzRightForearm.destroy();
+	modelBuzzRightHand.destroy();
+	modelBuzzRightCalf.destroy();
+	modelBuzzRightFoot.destroy();
+	modelBuzzRightThigh.destroy();
+	modelBuzzRightWing1.destroy();
+	modelBuzzRightWing2.destroy();
 
 	// Textures Delete
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -813,6 +870,9 @@ void applicationLoop() {
 
 	modelMatrixNave = glm::translate(modelMatrixDart, glm::vec3(-3.0, 0.0, 2.0));
 	modelMatrixCohete = glm::translate(modelMatrixDart, glm::vec3(-3.0, 0.0, 2.0));
+
+	modelMatrixBuzz = glm::translate(modelMatrixBuzz, glm::vec3(3.0, 0.0, -20.0));
+
 
 	// Variables to interpolation key frames
 	fileName = "../animaciones/animation_dart_joints.txt";
@@ -1148,7 +1208,76 @@ void applicationLoop() {
 		glEnable(GL_CULL_FACE);
 
 		// Renderizado de Buzz
-		
+		glm::mat4 modelMatrixBuzzBody = glm::mat4(modelMatrixBuzz);
+		modelMatrixBuzzBody = glm::scale(modelMatrixBuzzBody, glm::vec3(2.5f, 2.5f, 2.5f));
+		modelBuzzTorso.render(modelMatrixBuzzBody);
+		glm::mat4 modelMatrixBuzzLeftArm = glm::mat4(modelMatrixBuzzBody);
+		modelMatrixBuzzLeftArm = glm::translate(modelMatrixBuzzLeftArm, glm::vec3(0.183784f, 0.579864f, -0.027445f));
+		modelMatrixBuzzLeftArm = glm::rotate(modelMatrixBuzzLeftArm, rotBuzzLeftArm, glm::vec3(1.0f, 0.0f, 0.0f));
+		modelMatrixBuzzLeftArm = glm::rotate(modelMatrixBuzzLeftArm, glm::radians(-65.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		modelMatrixBuzzLeftArm = glm::translate(modelMatrixBuzzLeftArm, glm::vec3(-0.183784f, -0.579864f, 0.027445f));
+		modelBuzzLeftArm.render(modelMatrixBuzzLeftArm);
+		glm::mat4 modelMatrixBuzzLeftForearm = glm::mat4(modelMatrixBuzzLeftArm);
+		modelBuzzLeftForeArm.render(modelMatrixBuzzLeftForearm);
+		glm::mat4 modelMatrixBuzzLeftHand = glm::mat4(modelMatrixBuzzLeftForearm);
+		modelBuzzLeftHand.render(modelMatrixBuzzLeftHand);
+		glm::mat4 modelMatrixBuzzHead = glm::mat4(modelMatrixBuzzBody);
+		modelMatrixBuzzHead = glm::rotate(modelMatrixBuzzHead, rotBuzzHead, glm::vec3(0.0f, 1.0f, 0.0f));
+		modelBuzzHead.render(modelMatrixBuzzHead);
+		glm::mat4 modelMatrixHip = glm::mat4(modelMatrixBuzzBody);
+		modelMatrixHip = glm::rotate(modelMatrixHip, rotBuzzHip, glm::vec3(0.0f, 1.0f, 0.0f));
+		modelBuzzHip.render(modelMatrixHip);
+		glm::mat4 modelMatrixBuzzRightArm = glm::mat4(modelMatrixBuzzBody);
+		modelMatrixBuzzRightArm = glm::translate(modelMatrixBuzzRightArm, glm::vec3(-0.179974f, 0.577592f, -0.022103f));
+		modelMatrixBuzzRightArm = glm::rotate(modelMatrixBuzzRightArm, rotBuzzRightArm1, glm::vec3(1.0f, 0.0f, 0.0f));
+		modelMatrixBuzzRightArm = glm::rotate(modelMatrixBuzzRightArm, rotBuzzRightArm2, glm::vec3(0.0f, 0.0f, 1.0f));
+		modelMatrixBuzzRightArm = glm::translate(modelMatrixBuzzRightArm, glm::vec3(0.179974f, -0.577592f, 0.022103f));
+		modelBuzzRightArm.render(modelMatrixBuzzRightArm);
+		glm::mat4 modelMatrixBuzzRightForearm = glm::mat4(modelMatrixBuzzRightArm);
+		modelMatrixBuzzRightForearm = glm::translate(modelMatrixBuzzRightForearm, glm::vec3(-0.298368f, 0.583773f, 0.008465f));
+		modelMatrixBuzzRightForearm = glm::rotate(modelMatrixBuzzRightForearm, rotBuzzRightForeArm, glm::vec3(0.0f, 1.0f, 0.0f));
+		modelMatrixBuzzRightForearm = glm::translate(modelMatrixBuzzRightForearm, glm::vec3(0.298368f, -0.583773f, -0.008465f));
+		modelBuzzRightForearm.render(modelMatrixBuzzRightForearm);
+		glm::mat4 modelMatrixBuzzRightHand = glm::mat4(modelMatrixBuzzRightForearm);
+		modelMatrixBuzzRightHand = glm::translate(modelMatrixBuzzRightHand, glm::vec3(-0.416066f, 0.587046f, 0.076258f));
+		modelMatrixBuzzRightHand = glm::rotate(modelMatrixBuzzRightHand, rotBuzzRightHand, glm::vec3(1.0f, 0.0f, 0.0f));
+		modelMatrixBuzzRightHand = glm::translate(modelMatrixBuzzRightHand, glm::vec3(0.416066f, -0.587046f, -0.076258f));
+		modelBuzzRightHand.render(modelMatrixBuzzRightHand);
+
+		//Muslo Izquierdo
+		glm::mat4 modelMatrixBuzzLeftThigh = glm::mat4(modelMatrixHip);
+		modelMatrixBuzzLeftThigh = glm::translate(modelMatrixBuzzLeftThigh, glm::vec3(0.05847f, 0.3973f, 0.009103f));
+		modelMatrixBuzzLeftThigh = glm::rotate(modelMatrixBuzzLeftThigh, rotBuzzLeftThigh, glm::vec3(-1.0f, 0.0f, 0.0f));
+		modelMatrixBuzzLeftThigh = glm::translate(modelMatrixBuzzLeftThigh, glm::vec3(-0.05847f, -0.3973f, -0.009103f));
+		modelBuzzLeftThigh.render(modelMatrixBuzzLeftThigh);
+		//Muslo Derecho
+		glm::mat4 modelMatrixBuzzRightThigh = glm::mat4(modelMatrixHip);
+		modelMatrixBuzzRightThigh = glm::translate(modelMatrixBuzzRightThigh, glm::vec3(-0.06079f, 0.3958f, 0.009026f));
+		modelMatrixBuzzRightThigh = glm::rotate(modelMatrixBuzzRightThigh, rotBuzzRightThigh, glm::vec3(-1.0f, 0.0f, 0.0f));
+		modelMatrixBuzzRightThigh = glm::translate(modelMatrixBuzzRightThigh, glm::vec3(0.06079f, -0.3958f, -0.009026f));
+		modelBuzzRightThigh.render(modelMatrixBuzzRightThigh);
+		//Pantorrilla Izquierda
+		glm::mat4 modelMatrixBuzzLeftCalf = glm::mat4(modelMatrixBuzzLeftThigh);
+		modelBuzzLeftCalf.render(modelMatrixBuzzLeftCalf);
+		//Pantorrilla Derecha
+		glm::mat4 modelMatrixBuzzRightCalf = glm::mat4(modelMatrixBuzzRightThigh);
+		modelBuzzRightCalf.render(modelMatrixBuzzRightCalf);
+		//Pie izquierdo
+		glm::mat4 modelMatrixBuzzLeftFoot = glm::mat4(modelMatrixBuzzLeftCalf);
+		modelBuzzLeftFoot.render(modelMatrixBuzzLeftFoot);
+		//Pie Derecho
+		glm::mat4 modelMatrixBuzzRightFoot = glm::mat4(modelMatrixBuzzRightCalf);
+		modelBuzzRightFoot.render(modelMatrixBuzzRightFoot);
+		//Alas Izquierdas
+		glm::mat4 modelMatrixBuzzLeftWing1 = glm::mat4(modelMatrixBuzzBody);
+		modelBuzzLeftWing1.render(modelMatrixBuzzLeftWing1);
+		glm::mat4 modelMatrixBuzzLeftWing2 = glm::mat4(modelMatrixBuzzBody);
+		modelBuzzLeftWing2.render(modelMatrixBuzzLeftWing2);
+		//Alas derechas
+		glm::mat4 modelMatrixBuzzRightWing1 = glm::mat4(modelMatrixBuzzBody);
+		modelBuzzRightWing1.render(modelMatrixBuzzRightWing1);
+		glm::mat4 modelMatrixBuzzRightWing2 = glm::mat4(modelMatrixBuzzBody);
+		modelBuzzRightWing2.render(modelMatrixBuzzRightWing2);
 
 
 		 /*******************************************
