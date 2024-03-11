@@ -47,6 +47,8 @@ Shader shader;
 Shader shaderSkybox;
 //Shader con multiples luces
 Shader shaderMulLighting;
+//Shader con varias texturas
+Shader shaderMultiTextures;
 
 std::shared_ptr<FirstPersonCamera> camera(new FirstPersonCamera());
 
@@ -55,6 +57,7 @@ Box boxCesped;
 Box boxWalls;
 Box boxHighway;
 Box boxLandingPad;
+Box boxMultiTexture;
 Sphere esfera1(10, 10);
 // Models complex instances
 Model modelRock;
@@ -293,6 +296,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	shader.initialize("../Shaders/colorShader.vs", "../Shaders/colorShader.fs");
 	shaderSkybox.initialize("../Shaders/skyBox.vs", "../Shaders/skyBox.fs");
 	shaderMulLighting.initialize("../Shaders/iluminacion_texture_res.vs", "../Shaders/multipleLights.fs");
+	shaderMultiTextures.initialize("../Shaders/iluminacion_texture_res.vs", "../Shaders/multipleLights_multitextures.fs");
 
 	// Inicializacion de los objetos.
 	skyboxSphere.init();
@@ -419,6 +423,11 @@ modelNave.setShader(&shaderMulLighting);
 
 modelCohete.loadModel("../models/teoria/Cohete.obj");
 modelCohete.setShader(&shaderMulLighting);
+
+	boxMultiTexture.init();
+	boxMultiTexture.setShader(&shaderMultiTextures);
+	boxMultiTexture.setPosition(glm::vec3(0.0f, 2.0f, 4.0f));///Liberar memoria actualizar codigo
+	boxMultiTexture.setScale(glm::vec3(2.0f, 2.0f, 2.0f));
 
 	camera->setPosition(glm::vec3(0.0, 3.0, 4.0));
 	
@@ -570,6 +579,8 @@ modelCohete.setShader(&shaderMulLighting);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // Wrapping en el eje v
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Filtering de minimización
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // Filtering de maximimizacion
+
+	
 	if(textureLandingPad.getData()){
 		// Transferir los datos de la imagen a la tarjeta
 		glTexImage2D(GL_TEXTURE_2D, 0, textureLandingPad.getChannels() == 3 ? GL_RGB : GL_RGBA, textureLandingPad.getWidth(), textureLandingPad.getHeight(), 0,
@@ -988,6 +999,11 @@ void applicationLoop() {
 		shaderMulLighting.setMatrix4("view", 1, false,
 				glm::value_ptr(view));
 
+		//Settea la matriz de vistay projection al shader con multiples texturas
+		shaderMultiTextures.setMatrix4("projection", 1, false,
+			glm::value_ptr(projection));
+		shaderMultiTextures.setMatrix4("view", 1, false,
+			glm::value_ptr(view));
 		/*******************************************
 		 * Propiedades Luz direccional
 		 *******************************************/
@@ -997,16 +1013,22 @@ void applicationLoop() {
 		shaderMulLighting.setVectorFloat3("directionalLight.light.specular", glm::value_ptr(glm::vec3(0.9, 0.9, 0.9)));
 		shaderMulLighting.setVectorFloat3("directionalLight.direction", glm::value_ptr(glm::vec3(-1.0, 0.0, 0.0)));
 
+		shaderMultiTextures.setVectorFloat3("viewPos", glm::value_ptr(camera->getPosition()));
+		shaderMultiTextures.setVectorFloat3("directionalLight.light.ambient", glm::value_ptr(glm::vec3(0.3, 0.3, 0.3)));
+		shaderMultiTextures.setVectorFloat3("directionalLight.light.diffuse", glm::value_ptr(glm::vec3(0.7, 0.7, 0.7)));
+		shaderMultiTextures.setVectorFloat3("directionalLight.light.specular", glm::value_ptr(glm::vec3(0.9, 0.9, 0.9)));
+		shaderMultiTextures.setVectorFloat3("directionalLight.direction", glm::value_ptr(glm::vec3(-1.0, 0.0, 0.0)));
+
 		/*******************************************
 		 * Propiedades SpotLights
 		 *******************************************/
 		shaderMulLighting.setInt("spotLightCount", 0);
-
+		shaderMultiTextures.setInt("spotLightCount", 0);
 		/*******************************************
 		 * Propiedades PointLights
 		 *******************************************/
 		shaderMulLighting.setInt("pointLightCount", 0);
-
+		shaderMultiTextures.setInt("pointLightCount", 0);
 		/*******************************************
 		 * Cesped
 		 *******************************************/
@@ -1131,6 +1153,15 @@ void applicationLoop() {
 		boxLandingPad.render();
 		//shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
 		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glActiveTexture(GL_TEXTURE4);
+		//glBindTexture(GL_TEXTURE_2D, textureWaterID);
+		shaderMultiTextures.setInt("texture1", 4);
+		glActiveTexture(GL_TEXTURE2);
+		//glBindTexture(GL_TEXTURE_2D, textureSpongeID);
+		shaderMultiTextures.setInt("texture2", 2);
+		shaderMultiTextures.setFloat("porcentajeMe", 0.3f);
+		boxMultiTexture.render();
 
 		/*******************************************
 		 * Custom objects obj
