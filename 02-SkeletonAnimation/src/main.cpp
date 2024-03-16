@@ -104,16 +104,18 @@ GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
 GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
 GL_TEXTURE_CUBE_MAP_NEGATIVE_Z };
 
-std::string fileNames[6] = { "../Textures/mp_bloodvalley/blood-valley_ft.tga",
-		"../Textures/mp_bloodvalley/blood-valley_bk.tga",
-		"../Textures/mp_bloodvalley/blood-valley_up.tga",
-		"../Textures/mp_bloodvalley/blood-valley_dn.tga",
-		"../Textures/mp_bloodvalley/blood-valley_rt.tga",
-		"../Textures/mp_bloodvalley/blood-valley_lf.tga" };
+std::string fileNames[6] = { "../Textures/SkyBox/right.tga",
+		"../Textures/SkyBox/left.tga",
+		"../Textures/SkyBox/top.tga",
+		"../Textures/SkyBox/bottom.tga",
+		"../Textures/SkyBox/back.tga",
+		"../Textures/SkyBox/front.tga" };
 
 bool exitApp = false;
 int lastMousePosX, offsetX = 0;
 int lastMousePosY, offsetY = 0;
+
+int numAni_Trooper = 0;
 
 // Model matrix definitions
 glm::mat4 modelMatrixEclipse = glm::mat4(1.0f);
@@ -757,6 +759,58 @@ bool processInput(bool continueApplication) {
 		modelMatrixBuzz = glm::translate(modelMatrixBuzz, glm::vec3(0.0, 0.0, 0.02));
 	else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		modelMatrixBuzz = glm::translate(modelMatrixBuzz, glm::vec3(0.0, 0.0, -0.02));
+
+
+	//MOVIMIENTOS DEL STORM:
+// Variables globales para el estado de las teclas
+bool key5_Pressed = false; // Indica si la tecla 5 está presionada
+bool key6_Pressed = false; // Indica si la tecla 6 está presionada
+
+// Movimientos del Trooper
+if (modelSelected == 5)
+{
+    if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
+    {
+        MatrixTrooper = glm::translate(MatrixTrooper, glm::vec3(0.0, 0.0, -0.02));
+        numAni_Trooper = 0;
+        key5_Pressed = true; // La tecla 5 está presionada
+    }
+    else
+    {
+        key5_Pressed = false; // La tecla 5 no está presionada
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
+    {
+        MatrixTrooper = glm::translate(MatrixTrooper, glm::vec3(0.0, 0.0, 0.02));
+        numAni_Trooper = 0;
+        key6_Pressed = true; // La tecla 6 está presionada
+    }
+    else
+    {
+        key6_Pressed = false; // La tecla 6 no está presionada
+    }
+}
+else
+{
+    key5_Pressed = false;
+    key6_Pressed = false;
+}
+
+// Aplicar movimiento continuo mientras la tecla está presionada
+if (key5_Pressed || key6_Pressed)
+{
+    glfwPollEvents(); 
+    return continueApplication; 
+}
+
+// Detener movimiento cuando la tecla se suelta
+return continueApplication;
+
+
+glfwPollEvents();
+return continueApplication;
+
 
 	glfwPollEvents();
 	return continueApplication;
